@@ -1,4 +1,5 @@
 #include QMK_KEYBOARD_H
+#include "config.h"
 
 enum custom_keycodes {
     CK_GESC = SAFE_RANGE // send grave key if pressed with any modifier held down, send escape otherwise
@@ -26,7 +27,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 const uint8_t ANY_MOD_MASK = MOD_MASK_CSAG;
 
 bool any_mod_held_down(void) {
-    return (get_mods() & ANY_MOD_MASK) | (get_oneshot_mods() & ANY_MOD_MASK);
+    uint8_t mods = get_mods() | get_weak_mods() | get_oneshot_mods();
+    return mods & ANY_MOD_MASK;
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -34,12 +36,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case CK_GESC:
             if (record->event.pressed) {
                 if (any_mod_held_down()) {
-                    SEND_STRING(SS_TAP(X_GRAVE));
+                    tap_code(KC_GRAVE);
+                    // SEND_STRING(SS_TAP(X_GRAVE));
                 } else {
-                    SEND_STRING(SS_TAP(X_ESCAPE));
+                    tap_code(KC_ESCAPE);
+                    // SEND_STRING(SS_TAP(X_ESCAPE));
                 }
             }
-            break;
+            return false;
     }
     return true;
 }
