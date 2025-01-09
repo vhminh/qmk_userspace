@@ -3,7 +3,7 @@
     nativeBuildInputs = with pkgs.buildPackages; [
       qmk
       bear
-      clangd
+      clang-tools
       dfu-programmer
       usbutils
   ];
